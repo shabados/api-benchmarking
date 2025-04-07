@@ -1,8 +1,8 @@
-import { Progress, ProgressProps, Text } from '@chakra-ui/react'
+import React from 'react'
 
 const MAX_MS = 700
 
-const toPercent = ( ms: number ) => ( ms / MAX_MS ) * 100
+const toPercent = (ms: number) => (ms / MAX_MS) * 100
 
 const thresholds = {
   ideal: 50,
@@ -14,10 +14,10 @@ const thresholds = {
 
 type Thresholds = keyof typeof thresholds
 
-const getRating = ( ms: number ) => Object
-  .entries( thresholds )
-  .sort( ( [ , v1 ], [ , v2 ] ) => v1 - v2 )
-  .find( ( [ , threshold ] ) => ms < threshold )![ 0 ] as Thresholds
+const getRating = (ms: number) =>
+  Object.entries(thresholds)
+    .sort(([, v1], [, v2]) => v1 - v2)
+    .find(([, threshold]) => ms < threshold)![0] as Thresholds
 
 const colours: { [key in Thresholds]: ProgressProps['colorScheme'] } = {
   ideal: 'green',
@@ -28,19 +28,14 @@ const colours: { [key in Thresholds]: ProgressProps['colorScheme'] } = {
 }
 
 type ResultProps = {
-  value?: number,
+  value?: number
 }
 
-const Result = ( { value }: ResultProps ) => (
+const Result = ({ value }: ResultProps) => (
   <>
-    {!!value && <Text>{`${value.toFixed( 0 )}ms`}</Text>}
+    {!!value && <span>{`${value.toFixed(0)}ms`}</span>}
 
-    <Progress
-      size="lg"
-      isIndeterminate={!value}
-      value={value ? toPercent( value ) : 0}
-      colorScheme={value ? colours[ getRating( value ) ] : 'blue'}
-    />
+    <progress className="w-full" value={value} max={MAX_MS} color={value ? colours[getRating(value)] : 'blue'} />
   </>
 )
 
