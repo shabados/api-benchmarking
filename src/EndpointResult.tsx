@@ -5,12 +5,12 @@ import useMeasureEndpoint from './use-measure-endpoint'
 
 export type EndpointResultProps = {
   name: string,
-  endpoint: string,
-  browserCache?: boolean,
+  getEndpoint: ( id: string ) => string,
+  didHitEdgeCache?: ( response: Response ) => boolean,
 }
 
-const EndpointResult = ( { name, endpoint, browserCache }: EndpointResultProps ) => {
-  const { first, average } = useMeasureEndpoint( endpoint, { browserCache } )
+const EndpointResult = ( { name, getEndpoint, didHitEdgeCache }: EndpointResultProps ) => {
+  const { first, average, endpoint } = useMeasureEndpoint( getEndpoint, { didHitEdgeCache } )
 
   return (
     <Tr>

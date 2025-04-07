@@ -12,30 +12,36 @@ export const useMeasureState = () => {
 const fetchWithTime = async ( input: string, init?: RequestInit ) => {
   const startTime = performance.now()
 
-  await fetch( input, init )
+  const response = await fetch( input, init )
 
-  return performance.now() - startTime
+  return { duration: performance.now() - startTime, response }
 }
 
 type UseMeasureEndpointOptions = {
   totalCount?: number,
   browserCache?: boolean,
+  didHitEdgeCache?: ( response: Response ) => boolean,
 }
 
 const useMeasureEndpoint = (
-  endpoint: string,
-  { totalCount = 10, browserCache = false }: UseMeasureEndpointOptions
+  getEndpoint: ( id: string ) => string,
+  { totalCount = 10, browserCache = false, didHitEdgeCache }: UseMeasureEndpointOptions
 ) => {
   const [ lock, setLock ] = useAtom( lockEndpointAtom )
 
-  const [ readings, setReadings ] = useState<number[]>( [] )
+  const endpoint = getEndpoint( 'DMP' )
+
+  const [ readings, setReadings ] = useState<{
+    duration: number,
+    cacheHit: boolean | undefined,
+  }[]>( [] )
   const [ error, setError ] = useState<boolean>()
 
   const isComplete = readings.length === totalCount || !!error
 
   useEffect( () => {
     setReadings( [] )
-  }, [ browserCache, totalCount, endpoint ] )
+  }, [ browserCache, totalCount, getEndpoint ] )
 
   useEffect( () => {
     if ( isComplete ) {
@@ -51,16 +57,20 @@ const useMeasureEndpoint = (
     if ( lock !== endpoint ) return
 
     void fetchWithTime( endpoint, { cache: browserCache ? 'default' : 'no-store' } )
-      .then( ( reading ) => setReadings( [ ...readings, reading ] ) )
+      .then( ( { duration, response } ) => setReadings( [
+        ...readings,
+        { duration, cacheHit: didHitEdgeCache?.( response ) },
+      ] ) )
       .catch( () => setError( true ) )
-  }, [ isComplete, endpoint, readings, lock, setLock, browserCache ] )
+  }, [ isComplete, endpoint, readings, lock, setLock, browserCache, didHitEdgeCache ] )
 
-  const max = Math.max( ...readings )
-  const min = Math.min( ...readings )
-  const [ first, ...rest ] = readings
-  const average = rest.reduce( ( acc, reading ) => acc + reading, 0 ) / readings.length
+  const durations = readings.map( ( { duration } ) => duration )
+  const max = Math.max( ...durations )
+  const min = Math.min( ...durations )
+  const [ first, ...rest ] = durations
+  const average = rest.reduce( ( acc, duration ) => acc + duration, 0 ) / durations.length
 
-  return { readings, average, max, min, first, isComplete, error }
+  return { readings, average, max, min, first, isComplete, error, endpoint }
 }
 
 export default useMeasureEndpoint
