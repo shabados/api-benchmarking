@@ -1,6 +1,8 @@
-import EndpointResult, { EndpointResultProps } from './EndpointResult'
-
 import React from 'react'
+
+import EndpointResult, { EndpointResultProps } from './EndpointResult'
+import useIpLocation from './use-ip-location'
+
 const endpoints: EndpointResultProps[] = [
   { name: 'GurbaniNow', getEndpoint: (id: string) => `https://api.gurbaninow.com/v2/shabad/${id}` },
   {
@@ -35,26 +37,38 @@ const endpoints: EndpointResultProps[] = [
   },
 ]
 
-const App = () => (
-  <div className="p-8 pt-0">
-    <h1 className="text-5xl mb-5">Shabad OS API Benchmarking</h1>
+const App = () => {
+  const location = useIpLocation()
 
-    <table className="table-auto">
-      <thead>
-        <tr>
-          <th>Source</th>
-          <th>First request duration</th>
-          <th>Average request duration</th>
-        </tr>
-      </thead>
+  return (
+    <div className="p-8 w-full">
+      <h1 className="text-3xl mb-5">Shabad OS API: Bench</h1>
 
-      <tbody>
-        {endpoints.map(({ name, getEndpoint }) => (
-          <EndpointResult key={name} name={name} getEndpoint={getEndpoint} />
-        ))}
-      </tbody>
-    </table>
-  </div>
-)
+      {location ? (
+        <p className="text-lg">
+          {location.city}, {location.country} ({location.regionName})
+        </p>
+      ) : (
+        <p>Locating</p>
+      )}
+
+      <table className="table-fixed w-full mt-6">
+        <thead className="border-b border-gray-200">
+          <tr className="text-left uppercase text-sm *:font-light p-4">
+            <th className="w-1/3">Source</th>
+            <th>First request duration</th>
+            <th>Average request duration</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {endpoints.map(({ name, getEndpoint }) => (
+            <EndpointResult key={name} name={name} getEndpoint={getEndpoint} />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
 
 export default App
