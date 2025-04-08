@@ -1,7 +1,7 @@
+import React from 'react'
 import Result from './Result'
 import useMeasureEndpoint from './use-measure-endpoint'
 
-import React from 'react'
 export type EndpointResultProps = {
   name: string
   getEndpoint: (id: string) => string
@@ -9,21 +9,17 @@ export type EndpointResultProps = {
 }
 
 const EndpointResult = ({ name, getEndpoint, didHitEdgeCache }: EndpointResultProps) => {
-  const { first, average, endpoint } = useMeasureEndpoint(getEndpoint, { didHitEdgeCache })
+  const { first, average, endpoint, error } = useMeasureEndpoint(getEndpoint, { didHitEdgeCache })
 
   return (
-    <tr>
+    <tr className="*:pr-12 *:py-1">
       <td>
         <a target="_blank" href={endpoint}>
-          {name}
+          ⇗ {name}
         </a>
       </td>
-      <td>
-        <Result value={first} />
-      </td>
-      <td>
-        <Result value={average} />
-      </td>
+      <td>{error ? <span className="text-red-500">Error</span> : <Result value={first} />}</td>
+      <td>{error ? <span className="text-red-500">Error</span> : <Result value={average} />}</td>
     </tr>
   )
 }
