@@ -4,15 +4,14 @@ const useIpLocation = () => {
   const [location, setLocation] = useState<{
     query: string
     status: string
-    country: string
-    countryCode: string
+    country_name: string
+    country_code: string
     region: string
-    regionName: string
     city: string
   }>()
 
   useEffect(() => {
-    fetch('http://ip-api.com/json/')
+    fetch('https://ipapi.co/json/')
       .then((res) => res.json())
       .then((data) => setLocation(data))
   }, [])

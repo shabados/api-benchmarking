@@ -63,7 +63,7 @@ const App = () => {
 
       {location ? (
         <p className="text-lg">
-          {location.city}, {location.country} ({location.regionName})
+          {location.city}, {location.country_name} ({location.region})
         </p>
       ) : (
         <p>Locating</p>
