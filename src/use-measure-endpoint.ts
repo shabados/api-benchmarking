@@ -17,6 +17,9 @@ const fetchWithTime = async (input: string, init?: RequestInit) => {
   return { duration: performance.now() - startTime, response }
 }
 
+const IDs = ['DMP', '2A1', 'S0R', 'X0C', 'Z1W']
+const getRandomId = () => IDs[Math.floor(Math.random() * IDs.length)]
+
 type UseMeasureEndpointOptions = {
   totalCount?: number
   browserCache?: boolean
@@ -29,7 +32,7 @@ const useMeasureEndpoint = (
 ) => {
   const [lock, setLock] = useAtom(lockEndpointAtom)
 
-  const endpoint = getEndpoint('DMP')
+  const endpoint = getEndpoint(IDs[0])
 
   const [readings, setReadings] = useState<
     {
@@ -58,7 +61,9 @@ const useMeasureEndpoint = (
 
     if (lock !== endpoint) return
 
-    void fetchWithTime(endpoint, { cache: browserCache ? 'default' : 'no-store' })
+    void fetchWithTime(endpoint, {
+      cache: browserCache ? 'default' : 'no-store',
+    })
       .then(({ duration, response }) => setReadings([...readings, { duration, cacheHit: didHitEdgeCache?.(response) }]))
       .catch(() => setError(true))
   }, [isComplete, endpoint, readings, lock, setLock, browserCache, didHitEdgeCache])

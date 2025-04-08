@@ -4,37 +4,36 @@ import EndpointResult, { EndpointResultProps } from './EndpointResult'
 import { msKey } from './Result'
 import useIpLocation from './use-ip-location'
 
+const didHitCfCache = (response: Response) => response.headers.get('cf-cache-status') === 'HIT'
+
 const endpoints: EndpointResultProps[] = [
-  { name: 'GurbaniNow', getEndpoint: (id: string) => `https://api.gurbaninow.com/v2/shabad/${id}` },
   {
-    name: 'Azure Function -> GurbaniNow',
-    getEndpoint: (id: string) => `https://shabad-web-app12079e8a.azurewebsites.net/api/shabad/${id}`,
-  },
-  {
-    name: 'Azure Blob Storage',
-    getEndpoint: (id: string) => `https://shabadosexpapinext.z13.web.core.windows.net/shabad/${id}`,
-  },
-  // [ 'Azure Premium Blob Storage', 'https://shabadosapinextpremium.z13.web.core.windows.net/shabad/DMP' ],
-  {
-    name: 'Azure CDN -> Azure Blob Storage',
-    getEndpoint: (id: string) => `https://cdn-endpoint-shabadosexpapinext.azureedge.net/shabad/${id}`,
-  },
-  // [ 'Azure CDN -> Azure Premium Blob Storage', 'https://cdn-endpoint-shabadosapinextpremium.azureedge.net/shabad/DMP' ],
-  {
-    name: 'Cloudflare Edge -> Azure Blob Storage',
-    getEndpoint: (id: string) => `https://shabad-edge.harjot-shabados.workers.dev/api/shabad/${id}?mode=blob`,
+    name: 'GurbaniNow',
+    getEndpoint: (id: string) => `https://api.gurbaninow.com/v2/shabad/${id}`,
+    didHitEdgeCache: didHitCfCache,
   },
   {
     name: 'Cloudflare Edge -> GurbaniNow',
     getEndpoint: (id: string) => `https://shabad-edge.harjot-shabados.workers.dev/api/shabad/${id}?mode=gurbaninow`,
+    didHitEdgeCache: didHitCfCache,
   },
   {
-    name: 'Cloudflare Edge -> Azure Function -> GurbaniNow',
-    getEndpoint: (id: string) => `https://shabad-edge.harjot-shabados.workers.dev/api/shabad/${id}?mode=function`,
+    name: 'Cloudflare R2',
+    getEndpoint: (id: string) => `https://content.shabados.com/package.json`,
+    didHitEdgeCache: didHitCfCache,
   },
   {
-    name: 'Cloudflare Edge -> Azure CDN -> Azure Blob Storage',
-    getEndpoint: (id: string) => `https://shabad-edge.harjot-shabados.workers.dev/api/shabad/${id}?mode=cdn`,
+    name: 'Cloudflare R2 -> Cloudflare Edge Cache',
+    getEndpoint: (id: string) => `https://api.shabados.com/package.json`,
+    didHitEdgeCache: didHitCfCache,
+  },
+  {
+    name: 'Bunny Standard Storage + Bunny CDN',
+    getEndpoint: (id: string) => `https://standard-test-cdn.b-cdn.net/package.json`,
+  },
+  {
+    name: 'Bunny Edge Storage + Bunny CDN',
+    getEndpoint: (id: string) => `https://s-edge-test-cdn.b-cdn.net/package.json`,
   },
 ]
 
@@ -80,8 +79,8 @@ const App = () => {
         </thead>
 
         <tbody>
-          {endpoints.map(({ name, getEndpoint }) => (
-            <EndpointResult key={name} name={name} getEndpoint={getEndpoint} />
+          {endpoints.map(({ name, ...rest }) => (
+            <EndpointResult key={name} name={name} {...rest} />
           ))}
         </tbody>
       </table>
