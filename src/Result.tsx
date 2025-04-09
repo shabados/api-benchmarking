@@ -29,20 +29,33 @@ export const msKey = Object.fromEntries(
   Object.entries(thresholds).map(([key, value]) => [key, { ms: value, class: colours[key] }])
 )
 
+export const getCacheHit = (boolean: boolean | undefined) => {
+  if (boolean === undefined) return ''
+
+  return boolean ? '✓' : '⨯'
+}
+
 type ResultProps = {
   value?: Reading
 }
 
 const Result = ({ value }: ResultProps) => (
-  <div className="flex items-center w-full">
+  <div className="relative flex items-center w-full">
     <progress
-      className={`flex-1 overflow-hidden rounded-full  [&::-webkit-progress-bar]:bg-slate-300 ${
+      className={`absolute -z-1 w-full overflow-hidden rounded-full  [&::-webkit-progress-bar]:bg-slate-300 ${
         value ? colours[getRating(value.duration)] : '[&::-webkit-progress-value]:bg-blue-500'
       }`}
       value={value?.duration}
       max={MAX_MS}
     />
-    {!!value && <span className="text-sm mx-4">{`${value.duration.toFixed(0)}ms`}</span>}
+
+    {!!value && (
+      <div className="ml-2 text-sm flex items-center w-full">
+        {`${value.duration.toFixed(0)}ms`}
+
+        <div className="text-sm mr-2 ml-auto">{getCacheHit(value?.cacheHit)}</div>
+      </div>
+    )}
   </div>
 )
 

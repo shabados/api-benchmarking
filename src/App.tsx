@@ -5,16 +5,17 @@ import { msKey } from './Result'
 import useIpLocation from './use-ip-location'
 
 const didHitCfCache = (response: Response) => response.headers.get('cf-cache-status') === 'HIT'
+const didHitBunnyCache = (response: Response) => response.headers.get('cdn-cache') === 'HIT'
 
 const endpoints: EndpointResultProps[] = [
   {
     name: 'GurbaniNow',
     getEndpoint: (id: string) => `https://api.gurbaninow.com/v2/shabad/${id}`,
-    didHitEdgeCache: didHitCfCache,
   },
   {
     name: 'shabados.com/api',
     getEndpoint: (id: string) => `https://www.shabados.com/api/g/${id}/`,
+    didHitEdgeCache: (r: Response) => r.headers.get('x-cache') === 'HIT',
   },
   {
     name: 'Cloudflare Edge -> GurbaniNow',
@@ -24,7 +25,6 @@ const endpoints: EndpointResultProps[] = [
   {
     name: 'Cloudflare R2',
     getEndpoint: (id: string) => `https://content.shabados.com/package.json`,
-    didHitEdgeCache: didHitCfCache,
   },
   {
     name: 'Cloudflare R2 -> Cloudflare Edge Cache',
@@ -34,10 +34,12 @@ const endpoints: EndpointResultProps[] = [
   {
     name: 'Bunny Standard Storage + Bunny CDN',
     getEndpoint: (id: string) => `https://standard-test-cdn.b-cdn.net/package.json`,
+    didHitEdgeCache: didHitBunnyCache,
   },
   {
     name: 'Bunny Edge Storage + Bunny CDN',
     getEndpoint: (id: string) => `https://s-edge-test-cdn.b-cdn.net/package.json`,
+    didHitEdgeCache: didHitBunnyCache,
   },
 ]
 
@@ -48,20 +50,29 @@ const App = () => {
     <div className="p-8 w-full">
       <h1 className="text-3xl">Shabad OS API: Bench</h1>
 
-      <div className="flex flex-col gap-4 mb-8">
-        <div className="flex flex-row gap-5 text-sm">
-          {Object.entries(msKey).map(([key, value]) => (
-            <div key={key} className={`flex items-center gap-2`}>
-              <div className={`w-2 h-2 rounded-full ${value.class}`} />
-              <div>
-                <span className="capitalize">{key} </span>
-                <span>
-                  ({'<'}
-                  {value.ms}ms)
-                </span>
+      <div className="mb-8">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-row gap-5 text-sm">
+            {Object.entries(msKey).map(([key, value]) => (
+              <div key={key} className={`flex items-center gap-2`}>
+                <div className={`w-2 h-2 rounded-full ${value.class}`} />
+                <div>
+                  <span className="capitalize">{key} </span>
+                  <span>
+                    ({'<'}
+                    {value.ms}ms)
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="flex flex-row gap-4 text-sm">
+            <span>x Cache miss</span>
+            <span>✓ Cache hit</span>
+          </div>
         </div>
       </div>
 
@@ -73,7 +84,7 @@ const App = () => {
         <p>Locating</p>
       )}
 
-      <table className="table-fixed w-full mt-6">
+      <table className="table-fixed w-full mt-6 overflow-x-auto">
         <thead className="border-b border-gray-200">
           <tr className="text-left uppercase text-sm *:font-light p-4">
             <th>Source</th>
