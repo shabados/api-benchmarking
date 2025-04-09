@@ -9,7 +9,9 @@ export type EndpointResultProps = {
 }
 
 const EndpointResult = ({ name, getEndpoint, didHitEdgeCache }: EndpointResultProps) => {
-  const { first, average, endpoint, error } = useMeasureEndpoint(getEndpoint, { didHitEdgeCache })
+  const { first, getPercentile, endpoint, error } = useMeasureEndpoint(getEndpoint, { didHitEdgeCache })
+
+  const results = [first, getPercentile(50), getPercentile(75), getPercentile(90), getPercentile(0), getPercentile(100)]
 
   return (
     <tr className="*:pr-12 *:py-1">
@@ -18,8 +20,9 @@ const EndpointResult = ({ name, getEndpoint, didHitEdgeCache }: EndpointResultPr
           {name}
         </a>
       </td>
-      <td>{error ? <span className="text-red-500">Error</span> : <Result value={first} />}</td>
-      <td>{error ? <span className="text-red-500">Error</span> : <Result value={average} />}</td>
+      {results.map((result, index) => (
+        <td key={index}>{error ? <span className="text-red-500">Error</span> : <Result value={result} />}</td>
+      ))}
     </tr>
   )
 }

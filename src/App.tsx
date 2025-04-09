@@ -77,8 +77,12 @@ const App = () => {
         <thead className="border-b border-gray-200">
           <tr className="text-left uppercase text-sm *:font-light p-4">
             <th>Source</th>
-            <th>First request duration</th>
-            <th>Average request duration</th>
+            <th>First</th>
+            <th>p50</th>
+            <th>p75</th>
+            <th>p90</th>
+            <th>Fastest</th>
+            <th>Slowest</th>
           </tr>
         </thead>
 

@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { Reading } from './use-measure-endpoint'
 export const thresholds = {
   ideal: 50,
   good: 100,
@@ -15,7 +15,7 @@ type Thresholds = keyof typeof thresholds
 const getRating = (ms: number) =>
   Object.entries(thresholds)
     .sort(([, v1], [, v2]) => v1 - v2)
-    .find(([, threshold]) => ms < threshold)![0] as Thresholds
+    .find(([, threshold]) => ms <= threshold)![0] as Thresholds
 
 export const colours: { [key in Thresholds]: string } = {
   ideal: '[&::-webkit-progress-value]:bg-green-500 bg-green-500',
@@ -30,19 +30,19 @@ export const msKey = Object.fromEntries(
 )
 
 type ResultProps = {
-  value?: number
+  value?: Reading
 }
 
 const Result = ({ value }: ResultProps) => (
   <div className="flex items-center w-full">
     <progress
       className={`flex-1 overflow-hidden rounded-full  [&::-webkit-progress-bar]:bg-slate-300 ${
-        value ? colours[getRating(value)] : '[&::-webkit-progress-value]:bg-blue-500'
+        value ? colours[getRating(value.duration)] : '[&::-webkit-progress-value]:bg-blue-500'
       }`}
-      value={value}
+      value={value?.duration}
       max={MAX_MS}
     />
-    {!!value && <span className="text-sm mx-4">{`${value.toFixed(0)}ms`}</span>}
+    {!!value && <span className="text-sm mx-4">{`${value.duration.toFixed(0)}ms`}</span>}
   </div>
 )
 
