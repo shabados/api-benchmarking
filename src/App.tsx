@@ -48,8 +48,8 @@ const App = () => {
   const location = useIpLocation()
 
   return (
-    <div className="p-8 w-full">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-8 min-w-full overflow-hidden">
+      <div className="flex justify-between items-center mb-8 flex-col md:flex-row gap-2">
         <h1 className="text-3xl">Shabad OS API: Bench</h1>
 
         <button onClick={shareHtml} className="px-4 py-2 bg-white rounded-xl font-medium cursor-pointer">
@@ -57,7 +57,7 @@ const App = () => {
         </button>
       </div>
 
-      <div className="mb-8">
+      <div className="mb-8 overflow-x-auto space-y-2">
         <div className="flex flex-col gap-4">
           <div className="flex flex-row gap-5 text-sm">
             {Object.entries(msKey).map(([key, value]) => (
@@ -91,25 +91,27 @@ const App = () => {
         <p>Locating</p>
       )}
 
-      <table className="table-fixed w-full mt-6 overflow-x-auto">
-        <thead className="border-b border-gray-200">
-          <tr className="text-left uppercase text-sm *:font-light p-4">
-            <th>Source</th>
-            <th>First</th>
-            <th>p50</th>
-            <th>p75</th>
-            <th>p90</th>
-            <th>Fastest</th>
-            <th>Slowest</th>
-          </tr>
-        </thead>
+      <main className="overflow-x-auto mt-6">
+        <table className="*:*:*:first:sticky *:*:*:first:left-0 *:*:*:first:bg-gradient-to-r *:*:*:first:from-[#f5f3f0] *:*:*:first:from-70% *:*:*:first:to-transparent *:*:*:first:z-10">
+          <thead className="border-b border-gray-200">
+            <tr className="text-left uppercase text-sm *:font-light p-4">
+              <th>Source</th>
+              <th>First</th>
+              <th>p50</th>
+              <th>p75</th>
+              <th>p90</th>
+              <th>Fastest</th>
+              <th>Slowest</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {endpoints.map(({ name, ...rest }) => (
-            <EndpointResult key={name} name={name} {...rest} />
-          ))}
-        </tbody>
-      </table>
+          <tbody>
+            {endpoints.map(({ name, ...rest }) => (
+              <EndpointResult key={name} name={name} {...rest} />
+            ))}
+          </tbody>
+        </table>
+      </main>
     </div>
   )
 }
