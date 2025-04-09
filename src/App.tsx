@@ -13,6 +13,10 @@ const endpoints: EndpointResultProps[] = [
     didHitEdgeCache: didHitCfCache,
   },
   {
+    name: 'shabados.com/api',
+    getEndpoint: (id: string) => `https://www.shabados.com/api/g/${id}/`,
+  },
+  {
     name: 'Cloudflare Edge -> GurbaniNow',
     getEndpoint: (id: string) => `https://shabad-edge.harjot-shabados.workers.dev/api/shabad/${id}?mode=gurbaninow`,
     didHitEdgeCache: didHitCfCache,
