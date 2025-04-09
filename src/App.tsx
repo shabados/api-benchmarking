@@ -3,6 +3,7 @@ import React from 'react'
 import EndpointResult, { EndpointResultProps } from './EndpointResult'
 import { msKey } from './Result'
 import useIpLocation from './use-ip-location'
+import { shareHtml } from './share'
 
 const didHitCfCache = (response: Response) => response.headers.get('cf-cache-status') === 'HIT'
 const didHitBunnyCache = (response: Response) => response.headers.get('cdn-cache') === 'HIT'
@@ -48,7 +49,13 @@ const App = () => {
 
   return (
     <div className="p-8 w-full">
-      <h1 className="text-3xl">Shabad OS API: Bench</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl">Shabad OS API: Bench</h1>
+
+        <button onClick={shareHtml} className="px-4 py-2 bg-white rounded-xl font-medium cursor-pointer">
+          Share
+        </button>
+      </div>
 
       <div className="mb-8">
         <div className="flex flex-col gap-4">
