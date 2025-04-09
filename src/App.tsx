@@ -76,7 +76,7 @@ const App = () => {
       <table className="table-fixed w-full mt-6">
         <thead className="border-b border-gray-200">
           <tr className="text-left uppercase text-sm *:font-light p-4">
-            <th className="w-1/4">Source</th>
+            <th>Source</th>
             <th>First request duration</th>
             <th>Average request duration</th>
           </tr>

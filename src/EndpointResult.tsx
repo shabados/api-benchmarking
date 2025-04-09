@@ -15,7 +15,7 @@ const EndpointResult = ({ name, getEndpoint, didHitEdgeCache }: EndpointResultPr
     <tr className="*:pr-12 *:py-1">
       <td>
         <a target="_blank" href={endpoint}>
-          ⇗ {name}
+          {name}
         </a>
       </td>
       <td>{error ? <span className="text-red-500">Error</span> : <Result value={first} />}</td>
