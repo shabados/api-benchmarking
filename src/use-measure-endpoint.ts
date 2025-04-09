@@ -44,7 +44,7 @@ type UseMeasureEndpointOptions = {
 
 const useMeasureEndpoint = (
   getEndpoint: (id: string) => string,
-  { totalCount = 10, browserCache = false, didHitEdgeCache }: UseMeasureEndpointOptions
+  { totalCount = 30, browserCache = false, didHitEdgeCache }: UseMeasureEndpointOptions
 ) => {
   const [lock, setLock] = useAtom(lockEndpointAtom)
 
